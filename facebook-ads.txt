@@ -1,7 +1,7 @@
 ! Title: Facebook Ads (uBlock Origin)
 ! Description: Removes feed, right-column, Marketplace and search ads on facebook.com, keyed on the field names Facebook serves as of late October 2026.
 ! Homepage: https://github.com/SysAdminDoc/facebook-ublock-filters
-! Version: 2026.10.29.1
+! Version: 2026.10.29.2
 ! Expires: 1 day
 ! License: MIT, https://github.com/SysAdminDoc/facebook-ublock-filters/blob/main/LICENSE
 !

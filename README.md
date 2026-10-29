@@ -1,6 +1,6 @@
 # facebook-ublock-filters
 
-[![Version](https://img.shields.io/badge/version-2026.10.29.1-blue)](CHANGELOG.md) [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE) [![Platform](https://img.shields.io/badge/uBlock%20Origin-Firefox%20%7C%20Chromium-orange)](https://github.com/gorhill/uBlock)
+[![Version](https://img.shields.io/badge/version-2026.10.29.2-blue)](CHANGELOG.md) [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE) [![Platform](https://img.shields.io/badge/uBlock%20Origin-Firefox%20%7C%20Chromium-orange)](https://github.com/gorhill/uBlock)
 
 A uBlock Origin filter list that takes the ads out of the Facebook news feed, the right column, Marketplace and search results.
 
@@ -14,15 +14,20 @@ Facebook fights this with code it calls GHL. It fetches feed data with a stock `
 
 ## Install
 
-This repo is private, so uBlock Origin can't subscribe to it by URL. Paste it in instead:
+Subscribe to it so uBlock Origin picks up fixes on its own (it checks once a day):
 
-1. Open [facebook-ads.txt](facebook-ads.txt) and copy everything.
-2. In uBlock Origin, open the dashboard and go to **My filters**.
-3. Paste at the end, click **Apply changes**, reload Facebook.
+1. In uBlock Origin, open the dashboard and go to **Filter lists**.
+2. Scroll to the bottom, tick **Import...** and paste this URL into the box:
+   ```
+   https://raw.githubusercontent.com/SysAdminDoc/facebook-ublock-filters/main/facebook-ads.txt
+   ```
+3. Click **Apply changes** and reload Facebook.
 
-It needs full uBlock Origin (Firefox, or a Chromium browser that still runs it, like Brave). uBO Lite can't run these scriptlets from My filters. None of the rules need the "Allow custom filters requiring trust" box, so leave it however you have it.
+If you'd rather update by hand, copy everything in [facebook-ads.txt](facebook-ads.txt) and paste it at the end of **My filters** instead. Don't do both.
 
-Updating from an older copy? Delete the old Facebook Ads block from My filters first, then paste the new one.
+It needs full uBlock Origin (Firefox, or a Chromium browser that still runs it, like Brave). uBO Lite can't run these scriptlets. None of the rules need the "Allow custom filters requiring trust" box, so leave it however you have it.
+
+Pasted an older copy into My filters before? Delete that Facebook Ads block first, then subscribe.
 
 ## Verify
 
