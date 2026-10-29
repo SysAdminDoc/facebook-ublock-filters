@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Added a project logo and a centered README header. Installation and verification now come before the technical details.
+
 ## v2026.10.29.2 - 2026-10-29
 
 - Fixed feed ads still showing in Chromium browsers. Facebook's anti-adblock check (GHL) feeds a decoy through `JSON.parse`, and uBO's stock `..node[?.*.__typename=="SponsoredData"]` rule damaged it, so Facebook moved its feed parsing to a parser no filter reaches. The list now turns off that one stock rule and prunes GHL's switches from the page's `envjson` block.
