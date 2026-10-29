@@ -1,0 +1,53 @@
+! Title: Facebook Ads (uBlock Origin)
+! Description: Removes feed, right-column, Marketplace and search ads on facebook.com, keyed on the field names Facebook serves as of late October 2026.
+! Homepage: https://github.com/SysAdminDoc/facebook-ublock-filters
+! Version: 2026.10.29.1
+! Expires: 1 day
+! License: MIT, https://github.com/SysAdminDoc/facebook-ublock-filters/blob/main/LICENSE
+!
+! How it works: Facebook marks an ad story in its own data with a non-null "th_dat_spo" object (the current name
+! of the old "sponsored_data" field) and a "CometStorySponsoredLabelStrategy" section that draws the Ad label.
+! The rules below delete those stories from the JSON before Facebook's own code renders them, so nothing is
+! drawn and nothing is left behind. The feed "category" field is hashed now, so it can't be matched here.
+!
+! Paste into uBlock Origin > Dashboard > My filters. The trusted-* lines at the end only run from My filters.
+
+! ---- News feed, first page: Facebook inlines the feed as JSON and parses it with JSON.parse
+web.facebook.com,www.facebook.com##+js(json-edit, ..node[?.th_dat_spo!=null], matches, th_dat_spo)
+web.facebook.com,www.facebook.com##+js(json-edit, ..node[?.comet_sections.context_layout.story.comet_sections.metadata.*.__typename=="CometStorySponsoredLabelStrategy"], matches, CometStorySponsoredLabelStrategy)
+
+! ---- News feed, later pages: GraphQL answers arrive as JSON lines over XMLHttpRequest
+web.facebook.com,www.facebook.com##+js(jsonl-edit-xhr-response, ..node[?.th_dat_spo!=null], propsToMatch, /graphql)
+web.facebook.com,www.facebook.com##+js(jsonl-edit-fetch-response, ..node[?.th_dat_spo!=null], propsToMatch, /graphql)
+web.facebook.com,www.facebook.com##+js(jsonl-edit-xhr-response, ..node[?.comet_sections.context_layout.story.comet_sections.metadata.*.__typename=="CometStorySponsoredLabelStrategy"], propsToMatch, /graphql)
+web.facebook.com,www.facebook.com##+js(jsonl-edit-fetch-response, ..node[?.comet_sections.context_layout.story.comet_sections.metadata.*.__typename=="CometStorySponsoredLabelStrategy"], propsToMatch, /graphql)
+
+! ---- Right column "Sponsored" box (inlined on the first page, refetched later over GraphQL)
+web.facebook.com,www.facebook.com##+js(json-edit, ..nodes.*[?.__typename=="AdsSideFeedUnit"], matches, AdsSideFeedUnit)
+web.facebook.com,www.facebook.com##+js(jsonl-edit-xhr-response, ..nodes.*[?.__typename=="AdsSideFeedUnit"], propsToMatch, /graphql)
+web.facebook.com,www.facebook.com##+js(jsonl-edit-fetch-response, ..nodes.*[?.__typename=="AdsSideFeedUnit"], propsToMatch, /graphql)
+
+! ---- Marketplace browse feed: ad tiles sit under "node" and in "upsell_stories", so match them anywhere
+web.facebook.com,www.facebook.com##+js(json-edit, ..[?.__typename=="MarketplaceFeedAdStory"], matches, MarketplaceFeedAdStory)
+web.facebook.com,www.facebook.com##+js(jsonl-edit-xhr-response, ..[?.__typename=="MarketplaceFeedAdStory"], propsToMatch, /graphql)
+web.facebook.com,www.facebook.com##+js(jsonl-edit-fetch-response, ..[?.__typename=="MarketplaceFeedAdStory"], propsToMatch, /graphql)
+
+! ---- Search results: the ad edge's node carries role "SEARCH_ADS" (and similar roles ending in _ADS)
+web.facebook.com,www.facebook.com##+js(json-edit, ..edges.*[?.node.role$="_ADS"], matches, _ADS)
+web.facebook.com,www.facebook.com##+js(jsonl-edit-xhr-response, ..edges.*[?.node.role$="_ADS"], propsToMatch, /graphql)
+web.facebook.com,www.facebook.com##+js(jsonl-edit-fetch-response, ..edges.*[?.node.role$="_ADS"], propsToMatch, /graphql)
+
+! ---- The old field name, in case Facebook flips its feature flag back
+web.facebook.com,www.facebook.com##+js(json-edit, ..node[?.sponsored_data!=null], matches, sponsored_data)
+web.facebook.com,www.facebook.com##+js(jsonl-edit-xhr-response, ..node[?.sponsored_data!=null], propsToMatch, /graphql)
+web.facebook.com,www.facebook.com##+js(jsonl-edit-fetch-response, ..node[?.sponsored_data!=null], propsToMatch, /graphql)
+
+! ---- Keep a freshly inserted iframe from handing Facebook an unhooked JSON.parse, XMLHttpRequest or fetch.
+! ---- These are trusted scriptlets, so they only run from My filters (or a list you marked as trusted).
+web.facebook.com,www.facebook.com##+js(trusted-prevent-dom-bypass, Node.prototype.appendChild, XMLHttpRequest JSON.parse fetch)
+web.facebook.com,www.facebook.com##+js(trusted-prevent-dom-bypass, Node.prototype.insertBefore, XMLHttpRequest JSON.parse fetch)
+web.facebook.com,www.facebook.com##+js(trusted-prevent-dom-bypass, Element.prototype.append, XMLHttpRequest JSON.parse fetch)
+web.facebook.com,www.facebook.com##+js(trusted-prevent-dom-bypass, Element.prototype.prepend, XMLHttpRequest JSON.parse fetch)
+web.facebook.com,www.facebook.com##+js(trusted-prevent-dom-bypass, Element.prototype.after, XMLHttpRequest JSON.parse fetch)
+web.facebook.com,www.facebook.com##+js(trusted-prevent-dom-bypass, Element.prototype.before, XMLHttpRequest JSON.parse fetch)
+web.facebook.com,www.facebook.com##+js(trusted-prevent-dom-bypass, Element.prototype.insertAdjacentElement, XMLHttpRequest JSON.parse fetch)

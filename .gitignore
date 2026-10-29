@@ -1,0 +1,15 @@
+# working notes
+CLAUDE.md
+CODEX_CHANGELOG.md
+.claude/
+ROADMAP.md
+
+# captures and scratch
+captures/
+*.log
+*.png
+*.html
+
+# OS
+Thumbs.db
+.DS_Store
