@@ -10,13 +10,22 @@
 ! The rules below delete those stories from the JSON before Facebook's own code renders them, so nothing is
 ! drawn and nothing is left behind. The feed "category" field is hashed now, so it can't be matched here.
 !
-! Paste into uBlock Origin > Dashboard > My filters. The trusted-* lines at the end only run from My filters.
+! Facebook's anti-adblock code ("GHL") parses a decoy {"node":{"s":{"__typename":"SponsoredData"}}} first. If a
+! hooked JSON.parse mangles that decoy, Facebook stops using JSON.parse for feed data and switches to its own
+! JavaScript parser, which no filter can reach. So this list switches GHL's page flags off and turns off the one
+! stock uBlock filter that eats the decoy. None of the rules here need the "requiring trust" checkbox.
 
-! ---- News feed, first page: Facebook inlines the feed as JSON and parses it with JSON.parse
+! ---- Facebook's GHL switches arrive in the page's <script id="envjson"> block, read with JSON.parse
+web.facebook.com,www.facebook.com##+js(json-prune, v9k2mt7q d3hf9km2 r4wt7kmj p9fk3wmn w6jt4rnq k7q3nv9d z2ht6xqp r7c2m9xk b3xk8fqm q4v7nx3k m8r3kp6w t5nd8vqc x8kf2pw6 c6mw9qtk j6dw4ztx w8kq3zmt b7xr2qnf f2yq8vnd h4npx7qw n5tq2wjb k8pq2mnb q9k7m2x)
+
+! ---- Stock uBlock filter that deletes GHL's decoy and so pushes the feed onto the unfilterable parser
+facebook.com#@#+js(json-edit, ..node[?.*.__typename=="SponsoredData"])
+
+! ---- News feed: every GraphQL answer and every inlined first-page record goes through JSON.parse
 web.facebook.com,www.facebook.com##+js(json-edit, ..node[?.th_dat_spo!=null], matches, th_dat_spo)
 web.facebook.com,www.facebook.com##+js(json-edit, ..node[?.comet_sections.context_layout.story.comet_sections.metadata.*.__typename=="CometStorySponsoredLabelStrategy"], matches, CometStorySponsoredLabelStrategy)
 
-! ---- News feed, later pages: GraphQL answers arrive as JSON lines over XMLHttpRequest
+! ---- The same rules on the raw network answers, for when Facebook lets the page's XMLHttpRequest through
 web.facebook.com,www.facebook.com##+js(jsonl-edit-xhr-response, ..node[?.th_dat_spo!=null], propsToMatch, /graphql)
 web.facebook.com,www.facebook.com##+js(jsonl-edit-fetch-response, ..node[?.th_dat_spo!=null], propsToMatch, /graphql)
 web.facebook.com,www.facebook.com##+js(jsonl-edit-xhr-response, ..node[?.comet_sections.context_layout.story.comet_sections.metadata.*.__typename=="CometStorySponsoredLabelStrategy"], propsToMatch, /graphql)
@@ -41,13 +50,3 @@ web.facebook.com,www.facebook.com##+js(jsonl-edit-fetch-response, ..edges.*[?.no
 web.facebook.com,www.facebook.com##+js(json-edit, ..node[?.sponsored_data!=null], matches, sponsored_data)
 web.facebook.com,www.facebook.com##+js(jsonl-edit-xhr-response, ..node[?.sponsored_data!=null], propsToMatch, /graphql)
 web.facebook.com,www.facebook.com##+js(jsonl-edit-fetch-response, ..node[?.sponsored_data!=null], propsToMatch, /graphql)
-
-! ---- Keep a freshly inserted iframe from handing Facebook an unhooked JSON.parse, XMLHttpRequest or fetch.
-! ---- These are trusted scriptlets, so they only run from My filters (or a list you marked as trusted).
-web.facebook.com,www.facebook.com##+js(trusted-prevent-dom-bypass, Node.prototype.appendChild, XMLHttpRequest JSON.parse fetch)
-web.facebook.com,www.facebook.com##+js(trusted-prevent-dom-bypass, Node.prototype.insertBefore, XMLHttpRequest JSON.parse fetch)
-web.facebook.com,www.facebook.com##+js(trusted-prevent-dom-bypass, Element.prototype.append, XMLHttpRequest JSON.parse fetch)
-web.facebook.com,www.facebook.com##+js(trusted-prevent-dom-bypass, Element.prototype.prepend, XMLHttpRequest JSON.parse fetch)
-web.facebook.com,www.facebook.com##+js(trusted-prevent-dom-bypass, Element.prototype.after, XMLHttpRequest JSON.parse fetch)
-web.facebook.com,www.facebook.com##+js(trusted-prevent-dom-bypass, Element.prototype.before, XMLHttpRequest JSON.parse fetch)
-web.facebook.com,www.facebook.com##+js(trusted-prevent-dom-bypass, Element.prototype.insertAdjacentElement, XMLHttpRequest JSON.parse fetch)
