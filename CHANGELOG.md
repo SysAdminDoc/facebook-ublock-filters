@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Replaced the shield logo with a simpler geometric F mark that stays clear at small sizes.
 - Added a project logo and a centered README header. Installation and verification now come before the technical details.
 
 ## v2026.10.29.2 - 2026-10-29

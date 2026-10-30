@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo.png" alt="Facebook uBlock Filters logo" width="144" height="144" />
+  <img src="logo.png" alt="Facebook uBlock Filters geometric F logo" width="144" height="144" />
 </p>
 
 <h1 align="center">Facebook uBlock Filters</h1>
